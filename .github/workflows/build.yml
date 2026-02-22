@@ -1,0 +1,87 @@
+name: Build and Release
+
+on:
+  push:
+    branches: [ "main", "master" ] # Define the branches to trigger the workflow
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  build:
+    name: Build Mod
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eymistakens-zoom-build
+          path: build/libs/
+          retention-days: 7
+
+  release:
+    name: Check Version and Release
+    needs: build
+    runs-on: ubuntu-latest
+    # Run release only on push events (skip on pull requests)
+    if: github.event_name == 'push' 
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Check version and existing releases
+        id: version_check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get the mod_version from gradle.properties
+          VERSION=$(grep -E "^mod_version=" gradle.properties | cut -d'=' -f2 | tr -d '\r')
+          TAG="v$VERSION"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+          
+          # Check if a release with this tag already exists using GitHub CLI
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists. Skipping new release."
+            echo "is_new_version=false" >> $GITHUB_OUTPUT
+          else
+            echo "New version detected: $TAG. Starting release process."
+            echo "is_new_version=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download Built Artifact
+        if: steps.version_check.outputs.is_new_version == 'true'
+        uses: actions/download-artifact@v4
+        with:
+          name: eymistakens-zoom-build
+          path: build/libs/
+
+      - name: Create Release
+        if: steps.version_check.outputs.is_new_version == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: Eymistaken's Zoom ${{ env.TAG }}
+          # Upload only the main .jar file, exclude dev and sources jars
+          files: build/libs/!(*-dev.jar|*-sources.jar) 
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
