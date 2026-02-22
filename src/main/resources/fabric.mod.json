@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "eymistakens_zoom",
+  "version": "${version}",
+  "name": "Eymistaken's Zoom",
+  "description": "A fabric zoom mod integrated with Eymistaken's HUD.",
+  "authors": [
+    "Eymistaken"
+  ],
+  "contact": {
+    "homepage": "https://linktr.ee/Eymistaken"
+  },
+  "license": "MIT",
+  "icon": "assets/eymistakens_zoom/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.eymistaken.zoom.ZoomMod"
+    ],
+    "modmenu": [
+      "com.eymistaken.zoom.integration.ZoomModMenuIntegration"
+    ],
+    "eymistaken_hud": [
+      "com.eymistaken.zoom.hud.ZoomHudPluginInit"
+    ]
+  },
+  "mixins": [
+    "eymistakens_zoom.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.9",
+    "minecraft": "~1.21.11",
+    "java": ">=21",
+    "fabric-api": "*",
+    "cloth-config2": "*",
+    "modmenu": "*"
+  }
+}

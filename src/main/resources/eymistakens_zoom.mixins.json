@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.eymistaken.zoom.mixin",
+    "compatibilityLevel": "JAVA_21",
+    "mixins": [],
+    "client": [
+        "FovMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
