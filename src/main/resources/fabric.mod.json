@@ -3,7 +3,7 @@
   "id": "eymistakens_zoom",
   "version": "${version}",
   "name": "Eymistaken's Zoom",
-  "description": "A fabric zoom mod integrated with Eymistaken's HUD.",
+  "description": "An experimental custom cinematic zoom mod integrated with Eymistaken's HUD. This also serves as an example plugin for developers who want to create their own addons for Eymistaken's HUD.",
   "authors": [
     "Eymistaken"
   ],

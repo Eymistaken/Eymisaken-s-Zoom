@@ -28,6 +28,18 @@ public class ZoomModMenuIntegration implements ModMenuApi {
                     .setSaveConsumer(newValue -> ZoomMod.config.zoomMultiplier = newValue)
                     .build());
 
+            general.addEntry(entryBuilder.startIntSlider(Text.literal("Zoom In Speed"), ZoomMod.config.zoomInSpeed, 1, 100)
+                    .setDefaultValue(35)
+                    .setTooltip(Text.literal("Animation speed when zooming IN (35 = default/cinematic, 100 = instant)"))
+                    .setSaveConsumer(newValue -> ZoomMod.config.zoomInSpeed = newValue)
+                    .build());
+
+            general.addEntry(entryBuilder.startIntSlider(Text.literal("Zoom Out Speed"), ZoomMod.config.zoomOutSpeed, 1, 100)
+                    .setDefaultValue(35)
+                    .setTooltip(Text.literal("Animation speed when zooming OUT (35 = default/cinematic, 100 = instant)"))
+                    .setSaveConsumer(newValue -> ZoomMod.config.zoomOutSpeed = newValue)
+                    .build());
+
             ConfigCategory hudSettings = builder.getOrCreateCategory(Text.literal("HUD Settings"));
 
             hudSettings.addEntry(entryBuilder.startEnumSelector(Text.literal("Position"), com.eymistaken.simplecps.SimpleCPSConfig.Position.class, ZoomMod.config.hudPosition)

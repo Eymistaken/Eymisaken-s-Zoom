@@ -21,6 +21,8 @@ public class ZoomMod implements ClientModInitializer {
     
     public static KeyBinding zoomKeyBinding;
     public static boolean isZooming = false;
+    public static float currentZoomMultiplier = 1.0f;
+    public static float lastZoomMultiplier = 1.0f;
     
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static File configFile;
@@ -40,6 +42,22 @@ public class ZoomMod implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             isZooming = zoomKeyBinding.isPressed();
+            
+            lastZoomMultiplier = currentZoomMultiplier;
+            float targetZoom = isZooming && config != null ? (float) config.zoomMultiplier : 1.0f;
+            
+            // Hızı ayarlardan in veya out durumuna göre alıp float değere çeviriyoruz
+            float speed = 0.35f;
+            if (config != null) {
+                speed = isZooming ? (config.zoomInSpeed / 100.0f) : (config.zoomOutSpeed / 100.0f);
+            }
+            
+            currentZoomMultiplier += (targetZoom - currentZoomMultiplier) * speed; 
+            
+            // Son kareye kadar animasyonun akması için tolerans 0.001f'e düşürüldü.
+            if (Math.abs(currentZoomMultiplier - targetZoom) < 0.001f) {
+                currentZoomMultiplier = targetZoom;
+            }
         });
     }
 

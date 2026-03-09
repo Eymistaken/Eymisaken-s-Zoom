@@ -12,9 +12,12 @@ public class FovMixin {
 
     @Inject(method = "getFov", at = @At("RETURN"), cancellable = true)
     private void onGetFov(net.minecraft.client.render.Camera camera, float tickDelta, boolean changingFov, CallbackInfoReturnable<Float> cir) {
-        if (ZoomMod.isZooming && ZoomMod.config != null) {
-            float currentFov = cir.getReturnValue();
-            cir.setReturnValue((float) (currentFov / ZoomMod.config.zoomMultiplier));
+        if (ZoomMod.config != null) {
+            float lerpedZoom = net.minecraft.util.math.MathHelper.lerp(tickDelta, ZoomMod.lastZoomMultiplier, ZoomMod.currentZoomMultiplier);
+            if (lerpedZoom > 1.0f) {
+                float currentFov = cir.getReturnValue();
+                cir.setReturnValue(currentFov / lerpedZoom);
+            }
         }
     }
 }

@@ -2,8 +2,12 @@ package com.eymistaken.zoom.hud;
 
 import com.eymistaken.simplecps.SimpleCPSConfig;
 import com.eymistaken.simplecps.api.HudModule;
+import com.eymistaken.simplecps.api.HudModuleSetting;
+import com.eymistaken.simplecps.api.SliderSetting;
 import com.eymistaken.zoom.ZoomMod;
 import net.minecraft.client.gui.DrawContext;
+
+import java.util.List;
 
 public class ZoomHudModule extends HudModule {
 
@@ -122,6 +126,56 @@ public class ZoomHudModule extends HudModule {
             ZoomMod.config.hudXOffset = 0;
             ZoomMod.config.hudYOffset = 0;
             ZoomMod.config.hudScale = 100;
+            ZoomMod.saveConfig();
+        }
+    }
+
+    @Override
+    public List<HudModuleSetting> getContextMenuSettings() {
+        List<HudModuleSetting> settings = new java.util.ArrayList<>(super.getContextMenuSettings());
+
+        settings.add(new SliderSetting("Zoom Multiplier",
+            1, 20, 4,
+            () -> ZoomMod.config != null ? (int) ZoomMod.config.zoomMultiplier : 4,
+            val -> {
+                if (ZoomMod.config != null) {
+                    ZoomMod.config.zoomMultiplier = val;
+                    ZoomMod.saveConfig();
+                }
+            }
+        ));
+
+        settings.add(new SliderSetting("Zoom In Speed",
+            1, 100, 35,
+            () -> ZoomMod.config != null ? ZoomMod.config.zoomInSpeed : 35,
+            val -> {
+                if (ZoomMod.config != null) {
+                    ZoomMod.config.zoomInSpeed = val;
+                    ZoomMod.saveConfig();
+                }
+            }
+        ));
+
+        settings.add(new SliderSetting("Zoom Out Speed",
+            1, 100, 35,
+            () -> ZoomMod.config != null ? ZoomMod.config.zoomOutSpeed : 35,
+            val -> {
+                if (ZoomMod.config != null) {
+                    ZoomMod.config.zoomOutSpeed = val;
+                    ZoomMod.saveConfig();
+                }
+            }
+        ));
+
+        return settings;
+    }
+
+    @Override
+    public void resetVisualDefaults() {
+        if (ZoomMod.config != null) {
+            ZoomMod.config.zoomMultiplier = 4.0;
+            ZoomMod.config.zoomInSpeed = 35;
+            ZoomMod.config.zoomOutSpeed = 35;
             ZoomMod.saveConfig();
         }
     }
